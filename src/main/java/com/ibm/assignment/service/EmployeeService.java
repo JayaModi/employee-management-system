@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.mapstruct.factory.Mappers;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,7 @@ public class EmployeeService {
 	private final EmployeeRepository employeeRepository;
 	private final EmployeeMapper mapper = Mappers.getMapper(EmployeeMapper.class);
 
+	@CacheEvict(value = "employees", allEntries = true)
 	public EmployeeDTO createEmployee(EmployeeDTO employee) {
 		return mapper.toDTO(employeeRepository.save(mapper.toEntity(employee)));
 	}
@@ -30,6 +33,7 @@ public class EmployeeService {
 		return mapper.toDTO(findById(id));
 	}
 
+	@Cacheable(value = "employees")
 	public Page<EmployeeDTO> getAllEmployees(Pageable pageable) {
 		return employeeRepository.findAll(pageable).map(emp -> mapper.toDTO(emp));
 	}
@@ -40,6 +44,7 @@ public class EmployeeService {
 		return empList.stream().map(emp -> mapper.toDTO(emp)).collect(Collectors.toList());
 	}
 
+	
 	public EmployeeDTO updateEmployee(EmployeeDTO employeeDTO, Long id) {
 		Employee employee = findById(id);
 		employee.setAge(employeeDTO.getAge());
@@ -51,6 +56,7 @@ public class EmployeeService {
 		return mapper.toDTO(employeeRepository.save(employee));
 	}
 
+	@CacheEvict(value = "employees", allEntries = true)
 	public void deleteEmployee(Long id) {
 		findById(id);
 		employeeRepository.deleteById(id);
