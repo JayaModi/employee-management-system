@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.ibm.assignment.dto.EmployeeDTO;
 import com.ibm.assignment.entity.Employee;
+import com.ibm.assignment.exception.ResourceNotFoundException;
 import com.ibm.assignment.mapper.EmployeeMapper;
 import com.ibm.assignment.repository.EmployeeRepository;
 
@@ -26,7 +27,7 @@ public class EmployeeService {
 	}
 
 	public EmployeeDTO getEmployee(Long id) {
-		return mapper.toDTO(employeeRepository.findById(id).orElseThrow());
+		return mapper.toDTO(findById(id));
 	}
 
 	public Page<EmployeeDTO> getAllEmployees(Pageable pageable) {
@@ -40,18 +41,24 @@ public class EmployeeService {
 	}
 
 	public EmployeeDTO updateEmployee(EmployeeDTO employeeDTO, Long id) {
-		Employee employee = employeeRepository.findById(id).orElseThrow();
+		Employee employee = findById(id);
 		employee.setAge(employeeDTO.getAge());
 		employee.setDepartment(employeeDTO.getDepartment());
 		employee.setEmail(employeeDTO.getEmail());
 		employee.setName(employeeDTO.getName());
 		employee.setSalary(employeeDTO.getSalary());
-		
+
 		return mapper.toDTO(employeeRepository.save(employee));
 	}
 
 	public void deleteEmployee(Long id) {
+		findById(id);
 		employeeRepository.deleteById(id);
+	}
+	
+	private Employee findById(Long id) {
+		return employeeRepository.findById(id)
+		.orElseThrow(() -> new ResourceNotFoundException("Employee with ID: " + id + " not found"));
 	}
 
 }
