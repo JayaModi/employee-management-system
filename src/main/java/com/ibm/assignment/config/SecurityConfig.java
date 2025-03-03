@@ -31,8 +31,13 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http.csrf(AbstractHttpConfigurer::disable)
+        return http
+                .csrf(AbstractHttpConfigurer::disable)
+                .headers(headers -> headers
+                    .frameOptions(frameOptions -> frameOptions.disable()) // Allow H2 Console in iframe
+                )
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/h2-console/**").permitAll() // Allow H2 Console access
                         .requestMatchers("/api/auth/**",
                         		"/swagger-ui/**",
                                 "/v3/api-docs/**",

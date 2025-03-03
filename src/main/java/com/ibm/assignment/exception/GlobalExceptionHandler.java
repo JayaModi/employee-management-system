@@ -10,11 +10,15 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
+import lombok.extern.slf4j.Slf4j;
+
 @ControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
 	@ExceptionHandler(ResourceNotFoundException.class)
 	public ResponseEntity<Map<String, String>> handleResourceNotFound(ResourceNotFoundException ex) {
+		log.error("ResourceNotFoundException ex:{}",ex);
 		Map<String, String> errorResponse = new HashMap<String, String>();
 		errorResponse.put("error", "Not Found");
 		errorResponse.put("message", ex.getMessage());
@@ -23,6 +27,7 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<Map<String, String>> handleValidationException(MethodArgumentNotValidException ex) {
+		log.error("MethodArgumentNotValidException ex:{}",ex);
 		Map<String, String> errors = new HashMap<>();
 		ex.getBindingResult().getFieldErrors()
 				.forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
@@ -31,6 +36,7 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(IllegalArgumentException.class)
 	public ResponseEntity<Map<String, String>> handleIllegalArgumentException(IllegalArgumentException ex) {
+		log.error("IllegalArgumentException ex:{}",ex);
 		Map<String, String> errorResponse = new HashMap<>();
 		errorResponse.put("error", "Bad Request");
 		errorResponse.put("message", ex.getMessage());
@@ -39,6 +45,7 @@ public class GlobalExceptionHandler {
 	
 	@ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<Map<String, String>> handleNoHandlerFoundException(NoHandlerFoundException ex) {
+		log.error("NoHandlerFoundException ex:{}",ex);
         Map<String, String> errorResponse = new HashMap<>();
         errorResponse.put("error", "Not Found");
         errorResponse.put("message", "The requested endpoint does not exist.");
@@ -48,6 +55,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, String>> handleGeneralException(Exception ex) {
+    	log.error("Exception ex:{}",ex);
         Map<String, String> errorResponse = new HashMap<>();
         errorResponse.put("error", "Internal Server Error");
         errorResponse.put("message", "An unexpected error occurred.");

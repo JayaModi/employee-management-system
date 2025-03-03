@@ -1,8 +1,14 @@
 package com.ibm.assignment.service;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -20,6 +26,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import com.ibm.assignment.dto.EmployeeDTO;
 import com.ibm.assignment.entity.Employee;
@@ -33,12 +40,15 @@ class EmployeeServiceTest {
     @Mock
     private EmployeeRepository employeeRepository;
 
+    @MockitoBean
+    private EmployeeMapper mapper = Mappers.getMapper(EmployeeMapper.class);
+
     @InjectMocks
     private EmployeeService employeeService;
 
     private Employee employee;
     private EmployeeDTO employeeDTO;
-    private final EmployeeMapper mapper = Mappers.getMapper(EmployeeMapper.class);
+//    private final EmployeeMapper mapper = Mappers.getMapper(EmployeeMapper.class);
 
     @BeforeEach
     void setUp() {
@@ -60,7 +70,6 @@ class EmployeeServiceTest {
     @Test
     void testGetEmployee() {
         when(employeeRepository.findById(1L)).thenReturn(Optional.of(employee));
-
         EmployeeDTO result = employeeService.getEmployee(1L);
 
         assertNotNull(result);
